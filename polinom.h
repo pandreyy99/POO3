@@ -11,30 +11,6 @@
 using namespace std;
 
 template<class T>
-class polinom;
-
-template<class T>
-polinom<T> operator+(const polinom<T> &pol1, const polinom<T> &pol2);
-
-template<class T>
-polinom<T> operator*(const polinom<T> &pol1, const polinom<T> &pol2);
-
-template<class T>
-polinom<T> operator*(const polinom<T> &pol, const T &a);
-
-template<class T>
-polinom<T> operator*(const T &a, const polinom<T> &pol);
-
-template<class T>
-polinom<T> operator/(const polinom<T> &pol1, const polinom<T> &pol2);
-
-template<class T>
-istream &operator>>(istream &x, polinom<T> &pol);
-
-template<class T>
-ostream &operator<<(ostream &x, const polinom<T> &pol);
-
-template<class T>
 class polinom {
 private:
     int grad; /// Gradul polinomului
@@ -57,7 +33,9 @@ public:
      *  \param other Object to copy from
      */
     polinom(const polinom<T> &other);
+
     //int& polinom_set( int , int * ) ;
+
     /** Calcularea valorii intr-un punct x */
     T pdx(T x);
 
@@ -77,25 +55,33 @@ public:
     polinom<T> &operator=(polinom<T>);
 
     /** Supraincarcarea operatorului + */
-    friend polinom<T> operator+<>(const polinom<T> &pol1, const polinom<T> &pol2);
+    template<class U>
+    friend polinom<U> operator+(const polinom<U> &pol1, const polinom<U> &pol2);
 
     /** Supraincarcarea operatorului * (intre 2 polinoame) */
-    friend polinom<T> operator*<>(const polinom<T> &pol1, const polinom<T> &pol2);
+    template<class U>
+    friend polinom<U> operator*(const polinom<U> &pol1, const polinom<U> &pol2);
+
     /** Supraincarcarea operatorului * (cu scalar) */
     /** Cand scalarul e al doilea factor */
-    friend polinom<T> operator*<>(const polinom<T> &pol, const T &a);
+    template<class U>
+    friend polinom<U> operator*(const polinom<U> &pol, const U &a);
 
     /** Cand scalarul e primul factor */
-    friend polinom<T> operator*<>(const T &a, const polinom<T> &pol);
+    template<class U>
+    friend polinom<U> operator*(const U &a, const polinom<U> &pol);
 
     /** Supraincarcarea operatorului / (intre 2 polinoame) */
-    friend polinom<T> operator/<>(const polinom<T> &pol1, const polinom<T> &pol2);
+    template<class U>
+    friend polinom<U> operator/(const polinom<U> &pol1, const polinom<U> &pol2);
 
     /** Supraincarcarea operatorului de citire */
-    friend istream &operator>><>(istream &x, polinom<T> &pol);
+    template<class U>
+    friend istream &operator>>(istream &x, polinom<U> &pol);
 
     /** Supraincarcarea operatorului de afisare */
-    friend ostream &operator<<<>(ostream &x, const polinom<T> &pol);
+    template<class U>
+    friend ostream &operator<<(ostream &x, const polinom<U> &pol);
 };
 
 /**
@@ -251,20 +237,23 @@ T &polinom<T>::operator[](int i) {
     else return *a;
 }
 
-template<class T>
-istream &operator>>(istream &x, polinom<T> &pol) {
+template<class U>
+istream &operator>>(istream &x, polinom<U> &pol) {
     /// supraincarcarea op >> pt citirea unui polimom
-    delete[]pol.p;
-    x >> pol.grad;
-    pol.p = new T[pol.grad + 1];
+    delete[]pol.p;\
+    U local;
+    x >> local;
+    pol.grad = local;
+    cout << pol.grad << endl;
+    pol.p = new U[pol.grad + 1];
     for (int i = pol.grad; i >= 0; i--)
         x >> pol.p[i];
     /// returnam fluxul
     return x;
 }
 
-template<class T>
-ostream &operator<<(ostream &x, const polinom<T> &pol) {
+template<class U>
+ostream &operator<<(ostream &x, const polinom<U> &pol) {
     /// supraincarcarea op << pt afisarea unui polinom in forma corespunzatoare
     if ((pol.grad == 0) && (pol.p[pol.grad] == 0)) x << "0 ";
     else {
@@ -312,13 +301,13 @@ polinom<T> &polinom<T>::operator=(polinom<T> pol) {
     return *this;
 }
 
-template<class T>
-polinom<T> operator+(const polinom<T> &pol1, const polinom<T> &pol2) {
-    polinom<T> pol;
+template<class U>
+polinom<U> operator+(const polinom<U> &pol1, const polinom<U> &pol2) {
+    polinom<U> pol;
     int i;
     /// gradul polinomului rezultat va fi = gradul maxim dintre cele 2 polinoame
     pol.grad = max(pol1.grad, pol2.grad);
-    pol.p = new T[pol.grad + 1];
+    pol.p = new U[pol.grad + 1];
     /// daca primul grad va fi >= cel de-al doilea grad , adunam coef de pe poz 0,gradul comun si doar ii atribuim pe cei din primul polinom pentru celelalte
     if (pol1.grad >= pol2.grad) {
         for (i = 0; i <= pol2.grad; i++)
@@ -336,9 +325,9 @@ polinom<T> operator+(const polinom<T> &pol1, const polinom<T> &pol2) {
     return pol;
 }
 
-template<class T>
-polinom<T> operator*(const polinom<T> &pol1, const polinom<T> &pol2) {
-    polinom<T> pol(0, pol1.grad + pol2.grad);
+template<class U>
+polinom<U> operator*(const polinom<U> &pol1, const polinom<U> &pol2) {
+    polinom<U> pol(0, pol1.grad + pol2.grad);
     int i, j;
     /// gradul polinomului rezultat va fi suma gradelor polinoamelor factor
     pol.grad = pol1.grad + pol2.grad;
@@ -348,12 +337,12 @@ polinom<T> operator*(const polinom<T> &pol1, const polinom<T> &pol2) {
     return pol;
 }
 
-template<class T>
-polinom<T> operator*(const polinom<T> &pol, const T &a) {
+template<class U>
+polinom<U> operator*(const polinom<U> &pol, const U &a) {
     /// inmultirea unui polinom cu un scalar(scalarul fiind al 2 - lea factor)
-    polinom<T> pol_temp(0, pol.grad);
+    polinom<U> pol_temp(0, pol.grad);
     int j;
-    T i, s = 0;
+    U i, s = 0;
     for (j = 0; j <= pol.grad; j++) {
         i = pol.p[j];
         pol_temp.p[j] += pol.p[j] * a + s;
@@ -362,23 +351,23 @@ polinom<T> operator*(const polinom<T> &pol, const T &a) {
     return pol_temp;
 }
 
-template<class T>
-polinom<T> operator*(const T &a, const polinom<T> &pol) {
+template<class U>
+polinom<U> operator*(const U &a, const polinom<U> &pol) {
     /// cand scalarul e primul factor
-    polinom<T> pol_temp(0, pol.grad);
+    polinom<U> pol_temp(0, pol.grad);
     int i;
     for (i = 0; i <= pol.grad; i++)
         pol_temp.p[i] = a * pol.p[i];
     return pol_temp;
 }
 
-template<class T>
-polinom<T> operator/(const polinom<T> &pol1, const polinom<T> &pol2) {
+template<class U>
+polinom<U> operator/(const polinom<U> &pol1, const polinom<U> &pol2) {
     /// impartirea a 2 polinoame
     /// gradul polinomului rezultat va fi egal cu abs(diferenta celor 2 grade)
-    T a = -1;
+    U a = -1;
     int grd = abs(pol1.grad - pol2.grad);
-    polinom<T> pol(0, grd), temp(0, grd), temp1(pol1), temp2(pol2);
+    polinom<U> pol(0, grd), temp(0, grd), temp1(pol1), temp2(pol2);
     /// daca gradul impartitorului e mai mare decat cel al deimpartitului returnam polinomul nul
     if (pol1.grad < pol2.grad) {
         pol.grad = 0;
